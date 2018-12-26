@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://localhost:3307/weform?useSSL=false&characterEncoding=utf-8
+    driver-class-name: com.mysql.jdbc.Driver
+
+  jackson:
+    default-property-inclusion: non_null
+server:
+  port: 8888
+  ssl:
+    key-store: kason.top.jks
+    key-store-type: JKS
+    key-alias: server
+    key-store-password: tcmA9I5U5E
+
+project:
+  form: https://kason.top:8888/weform

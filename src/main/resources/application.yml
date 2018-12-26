@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: dev
+
+server:
+  servlet:
+    context-path: /weform
+
+wechat:
+  appId: wx613f15ebaa424da9
+  secret: 2db3a87844dc5fbf376b40542709e208
+
