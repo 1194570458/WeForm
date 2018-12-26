@@ -60,6 +60,7 @@ public class FieldDataController {
                                         HttpServletRequest request) {
         Cookie cookie = CookieUtil.get(request, CookieConstant.TOKEN);
         List<List<FieldDataVO>> list = dataService.list(formId, page, size, cookie.getValue());
+
         return ResultVOUtil.success(list);
     }
 
