@@ -50,8 +50,6 @@ public class FieldDataController {
             throw new FormException(ResultEnum.PARAM_ERROR, bindingResult.getFieldError().getDefaultMessage());
         }
         FieldMasterVO masterVO = dataService.create(fieldMasterVO);
-        Cookie cookie = CookieUtil.get(request, CookieConstant.TOKEN);
-        masterVO.setOpenid(cookie.getValue());
         return ResultVOUtil.success(masterVO);
     }
 

@@ -62,10 +62,6 @@ public class FieldDataServiceImpl implements FieldDataService {
             log.error("【添加数据】表单不存在 fieldMasterVO={}", fieldMasterVO);
             throw new FormException(ResultEnum.FORM_NOT_EXIST);
         }
-        if (!formMaster.getOpenid().equals(fieldMasterVO.getOpenid())) {
-            log.error("【添加数据】openid错误 fieldMaster={},formMaster={}", fieldMasterVO, formMaster);
-            throw new FormException(ResultEnum.PARAM_ERROR);
-        }
         //准备主表
         String primaryKey = KeyUtil.createPrimaryKey();
         fieldMasterVO.setMasterId(primaryKey);
