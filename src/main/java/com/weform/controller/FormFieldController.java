@@ -5,6 +5,7 @@ import com.weform.entity.FormField;
 import com.weform.service.FormFieldService;
 import com.weform.utils.CookieUtil;
 import com.weform.utils.ResultVOUtil;
+import com.weform.vo.FormFieldVO;
 import com.weform.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +43,13 @@ public class FormFieldController {
 
     //根绝表单查找所有字段
     @GetMapping("/list")
-    public ResultVO<List<FormField>> list(String formId) {
-        List<FormField> formFieldList = formFieldService.list(formId);
+    public ResultVO<List<FormFieldVO>> list(String formId) {
+        List<FormFieldVO> formFieldList = formFieldService.list(formId);
         return ResultVOUtil.success(formFieldList);
     }
 
     //删除字段
-    @PostMapping("/del")
+    @GetMapping("/del")
     public ResultVO delField(@RequestParam("fieldId") String fieldId,
                              HttpServletRequest request) {
         Cookie cookie = CookieUtil.get(request, CookieConstant.TOKEN);
@@ -56,5 +57,11 @@ public class FormFieldController {
         return ResultVOUtil.success();
     }
 
+    @GetMapping("/delAll")
+    public ResultVO deAllField(@RequestParam("formId") String formId,HttpServletRequest request){
+        Cookie cookie = CookieUtil.get(request, CookieConstant.TOKEN);
+        formFieldService.delAllField(formId,cookie.getValue());
+        return ResultVOUtil.success();
+    }
 
 }

@@ -3,12 +3,14 @@ package com.weform.service.impl;
 import com.weform.entity.FormField;
 import com.weform.entity.FormMaster;
 import com.weform.enums.FieldStatusEnum;
+import com.weform.enums.FormStatusEnum;
 import com.weform.enums.ResultEnum;
 import com.weform.exception.FormException;
 import com.weform.repository.FormFieldRepository;
 import com.weform.repository.FormMasterRepository;
 import com.weform.service.FormFieldService;
 import com.weform.utils.KeyUtil;
+import com.weform.vo.FormFieldVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -17,6 +19,7 @@ import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author: Kason
@@ -51,10 +54,28 @@ public class FormFieldServiceImpl implements FormFieldService {
 
     @Override
     @Transactional
-    public List<FormField> list(String formId) {
+    public List<FormFieldVO> list(String formId) {
         Sort orders = new Sort(Sort.Direction.ASC, "fieldGrade");
-        List<FormField> result = formFieldRepository.findByFormIdAndFieldStatus(formId, FieldStatusEnum.USED.getCode(),orders);
-        return result;
+        List<FormField> result = formFieldRepository.findByFormIdAndFieldStatus(formId, FieldStatusEnum.USED.getCode(), orders);
+        List<FormFieldVO> collect = result.stream().map(e ->
+                new FormFieldVO(
+                        e.getFieldId(),
+                        e.getFormId(),
+                        e.getFieldType(),
+                        e.getFieldClass(),
+                        e.getFieldName(),
+                        e.getFieldAttr(),
+                        e.getFieldTitle(),
+                        e.getFieldGrade(),
+                        e.getFieldNotNull(),
+                        e.getFieldStatus(),
+                        e.getCreateTime(),
+                        e.getUpdateTime()
+                ).setFormMasterAttr(formMasterRepository.findByFormIdAndFormStatusNot(e.getFormId(), FormStatusEnum.DEL.getCode()))
+        ).collect(Collectors.toList());
+
+
+        return collect;
     }
 
     @Override
@@ -70,8 +91,14 @@ public class FormFieldServiceImpl implements FormFieldService {
         formFieldRepository.save(result);
     }
 
-    private void checkForm(String formId, String openid) {
-        FormMaster formMaster = formMasterRepository.findById(formId).get();
+    @Override
+    public void delAllField(String formId, String openid) {
+        checkForm(formId, openid);
+        formFieldRepository.deleteStatusByFormId(formId);
+    }
+
+    private FormMaster checkForm(String formId, String openid) {
+        FormMaster formMaster = formMasterRepository.findByFormIdAndFormStatusNot(formId,FormStatusEnum.DEL.getCode());
         if (formMaster == null) {
             log.error("【查询字段】 表单错误 formId={}", formId);
             throw new FormException(ResultEnum.FORM_NOT_EXIST);
@@ -80,7 +107,7 @@ public class FormFieldServiceImpl implements FormFieldService {
             log.error("【查询字段】 openid错误 formMaster={},openid={}", formMaster, openid);
             throw new FormException(ResultEnum.PARAM_ERROR);
         }
-
+        return formMaster;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.weform.service.impl;
 
 import com.weform.entity.FormField;
+import com.weform.vo.FormFieldVO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,7 +39,7 @@ public class FormFieldServiceImplTest {
 
     @Test
     public void list() {
-        List<FormField> list = formFieldService.list ("123");
+        List<FormFieldVO> list = formFieldService.list ("123");
         log.info("【list】 = {}" , list);
         Assert.assertNotEquals(0,list.size());
     }

@@ -51,6 +51,15 @@ public class WechatController {
     private final static String url =
             "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code";
 
+    /**
+     * 获取真是登陆地址
+     *
+     * @param code
+     * @param nickName
+     * @param avatarUrl
+     * @param state
+     * @return
+     */
     @GetMapping("/unionid")
     public ResultVO openid(@RequestParam("code") String code,
                            @RequestParam("nickName") String nickName,
@@ -78,9 +87,16 @@ public class WechatController {
         return ResultVOUtil.success(map);
     }
 
+    /**
+     * 网页登陆接口
+     *
+     * @param openid
+     * @param response
+     * @return
+     */
     @GetMapping("/login")
     public ResultVO login(@RequestParam("openid") String openid, HttpServletResponse response) {
-        CookieUtil.set(response,CookieConstant.TOKEN,openid,CookieConstant.EXPIRE);
+        CookieUtil.set(response, CookieConstant.TOKEN, openid, CookieConstant.EXPIRE);
         return ResultVOUtil.success();
     }
 
@@ -90,8 +106,14 @@ public class WechatController {
     private static final String QR_CODE_URL =
             "https://api.weixin.qq.com/wxa/getwxacode?access_token=%s";
 
+    /**
+     * 获取登陆二维码
+     *
+     * @return
+     * @throws IOException
+     */
     @GetMapping("/qrcode")
-    public ResultVO QRcode() throws IOException {
+    public ResultVO QRcode()  {
         String result = restTemplateConfig.restTemplate().getForObject(String.format(
                 ACCESS_TOKEN_URL,
                 wechatAccountConfig.getAppId(),
@@ -100,13 +122,42 @@ public class WechatController {
         JsonObject jsonObject = new JsonParser().parse(result).getAsJsonObject();
 
         String state = KeyUtil.createNumber();
-        String qrcode = ImageUtil.getBase64(String.format(QR_CODE_URL, jsonObject.get("access_token").getAsString()), state);
+        String json = "{\"path\":\"pages/index/index?state=" + state + "\"}";
+        String qrcode = ImageUtil.getBase64(String.format(QR_CODE_URL, jsonObject.get("access_token").getAsString()), json);
         HashMap<String, String> map = new HashMap<>();
         map.put("state", state);
         map.put("img", qrcode);
         return ResultVOUtil.success(map);
     }
 
+    /**
+     * 根据formid获取小程序二维码
+     * @param formid
+     * @return
+     */
+    @GetMapping("/formQRcode")
+    public ResultVO formRQcode(@RequestParam("formid") String formid) {
+        String result = restTemplateConfig.restTemplate().getForObject(String.format(
+                ACCESS_TOKEN_URL,
+                wechatAccountConfig.getAppId(),
+                wechatAccountConfig.getSecret()
+        ), String.class);
+        JsonObject jsonObject = new JsonParser().parse(result).getAsJsonObject();
+
+        String json = "{\"path\":\"pages/form/form?formid=" + formid + "\"}";
+
+        String qrcode = ImageUtil.getBase64(String.format(QR_CODE_URL, jsonObject.get("access_token").getAsString()), json);
+        HashMap<String, String> map = new HashMap<>();
+        map.put("img", qrcode);
+        return ResultVOUtil.success(map);
+    }
+
+    /**
+     * 退出登陆
+     *
+     * @param session
+     * @return
+     */
     @GetMapping("/logout")
     public ResultVO logout(HttpSession session) {
         session.removeAttribute(CookieConstant.TOKEN);

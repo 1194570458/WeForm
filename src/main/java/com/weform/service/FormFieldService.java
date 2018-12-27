@@ -1,6 +1,7 @@
 package com.weform.service;
 
 import com.weform.entity.FormField;
+import com.weform.vo.FormFieldVO;
 
 import java.util.List;
 
@@ -14,10 +15,11 @@ public interface FormFieldService {
     FormField save(FormField formField,String openid);
 
     //查询字段
-    List<FormField> list(String formId);
+    List<FormFieldVO> list(String formId);
 
     //删除字段
     void delField(String fieldId,String openid);
 
 
+    void delAllField(String formId, String value);
 }

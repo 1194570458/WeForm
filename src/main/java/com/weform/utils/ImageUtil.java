@@ -17,7 +17,7 @@ import java.net.URLConnection;
 @Slf4j
 public class ImageUtil {
 
-    public static String getBase64(String path,String state) {
+    public static String getBase64(String path,String json) {
         OutputStreamWriter out = null;
         try {
             URL url = new URL(path);
@@ -27,7 +27,7 @@ public class ImageUtil {
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/json");
             out = new OutputStreamWriter(conn.getOutputStream());
-            out.write("{\"path\":\"pages/index/index?state=" + state + "\"}");
+            out.write(json);
             out.flush();
 
             ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
@@ -36,14 +36,13 @@ public class ImageUtil {
                 while ((ch = conn.getInputStream().read()) != -1) {
                     bytestream.write(ch);
                 }
-            }
-            catch (IOException e) {
-                log.error("【图片工具】 msg={}",e.getMessage());
+            } catch (IOException e) {
+                log.error("【图片工具】 msg={}", e.getMessage());
                 e.printStackTrace();
             }
             byte[] program = bytestream.toByteArray();
             BASE64Encoder encoder = new BASE64Encoder();
-            String  binary = encoder.encodeBuffer(program).trim();
+            String binary = encoder.encodeBuffer(program).trim();
             return binary;
         } catch (MalformedURLException e) {
             e.printStackTrace();
