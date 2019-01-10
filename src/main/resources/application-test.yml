@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    password: jason
+    username: root
+    url: jdbc:mysql://localhost:3306/weform?useSSL=false&characterEncoding=utf-8
+    driver-class-name: com.mysql.jdbc.Driver
+
+  jackson:
+    default-property-inclusion: non_null
+server:
+  port: 8888
+project:
+  form: http://120.79.147.66:8888/weform
